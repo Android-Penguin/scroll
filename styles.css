@@ -8,7 +8,7 @@ body, html {
 }
 #myElement {
     width: 100vw;
-    height: 90vh;
+    height: 80vh;
     background-color: gray;
     text-align: center;
     font: 30px/300px Helvetica, Arial, sans-serif;
