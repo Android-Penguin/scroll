@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles_test.css">
+    <title>Scroll Test</title>
+</head>
+<!-- onclick="debug()" -->
+<body onwheel="scrollDetected(event)">
+    <h1 id="heading">Soon to be scrollable?</h1>
+    
+    <div id="myElement">
+        <h1 id="scrollValue"></h1>
+    </div>
+</body>
+
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+
+<!-- Swipe detection -->
+<script>
+    var myElement = document.getElementById('myElement');
+
+    // create a simple instance
+    // by default, it only adds horizontal recognizers
+    var mc = new Hammer(myElement);
+
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+    // listen to events...
+    mc.on("panup pandown tap press", function(ev) {
+        myElement.textContent = ev.type +" gesture detected.";
+        if(ev.type == "panup") {
+            debug("swipe", "panup [scroll down]");
+        } else if(ev.type == "pandown") {
+            debug("swipe", "pandown  [scroll up]");
+        }
+    });
+</script>
+
+<!-- Scroll detection -->
+<script>
+    function scrollDetected(event) {
+        var scrollValue = event.deltaY;
+        debug("scroll", scrollValue);
+    }
+</script>
+
+<!-- Debug called when swipe or scroll is detected -->
+<script>
+    function debug(type, direction) {
+        var value = getComputedStyle(document.querySelector(":root")).getPropertyValue('--pointer');
+        if(type == "swipe") {
+            console.log(value + ", " + direction);
+        }
+        if(type == "scroll") {
+            console.log(value + " pointer, value=" + direction);
+            document.getElementById("scrollValue").innerHTML = Math.round(direction);
+        }
+
+    }
+</script>
+
+
+</html>

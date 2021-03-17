@@ -5,64 +5,175 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>Document</title>
+    <title>Scroll?</title>
 </head>
-<!-- onclick="debug()" -->
-<body onwheel="scrollDetected(event)">
-    <h1 id="heading">Soon to be scrollable?</h1>
-    
-    <div id="myElement">
-        <h1 id="scrollValue"></h1>
+<body onwheel="mouseScrolled(event)">
+    <div id="scrollContainer">
+        <img id=solar_system src="solar_system.svg" alt="Solar System">
+        <a href='https://www.freepik.com/vectors/infographic'>Infographic vector created by freepik - www.freepik.com</a>
     </div>
 </body>
 
-<script src="https://hammerjs.github.io/dist/hammer.js"></script>
-
-<!-- Swipe detection -->
+<!-- Animation class sequencing -->
 <script>
-    var myElement = document.getElementById('myElement');
+    var animationSequenceState = 0;
+    var pageAnimationCount = 0;
+    var maxCount = 8;
+    var animating = false;
 
-    // create a simple instance
-    // by default, it only adds horizontal recognizers
-    var mc = new Hammer(myElement);
+    // element to be animated
+    var image = document.getElementById("solar_system");
+    // classnames for animation 1
+    var animation1Class = "state1Animation";
+    var animation1ClassRev = "state1AnimationRevefqwefwefwefwefew";
+    // classnames for animation 2
+    var animation2Class = "state2Animation";
+    var animation2ClassRev = "state2AnimationRev";
+    // classnames for animation 3
+    var animation3Class = "";
+    var animation3ClassRev = "";
 
-    // let the pan gesture support all directions.
-    // this will block the vertical scrolling on a touch-device while on the element
-    mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+    
+    function animationHandler(direction) {
+        console.log(direction);
+        switch(animationSequenceState) {
+            case 0: //Decite animate direction
+                if(direction == "Forward") {
+                    if(pageAnimationCount < maxCount) {
+                        pageAnimationCount ++;
+                        console.log(pageAnimationCount);
+                        animating = true;
+                        animationSequenceState = pageAnimationCount;
+                        animationHandler(direction);
+                    }
+                } else if(direction == "Backward") {
+                    if(pageAnimationCount > 0) {
+                        console.log(pageAnimationCount);
+                        animating = true;
+                        animationSequenceState = pageAnimationCount;
+                        animationHandler(direction);
+                    }
+                }
+                break;
+            case 1://First animation state
+                if(animating) {
+                    if(direction == "Forward") {
+                        // Adds forward animation if not present
+                        if(!image.classList.contains(animation1Class)) {
+                            console.log("Ani1 Forward added");
+                            image.classList.add(animation1Class);
+                        }
+                        // Removes reverse animation if present
+                        if(image.classList.contains(animation1ClassRev)) {
+                            console.log("Ani1 Reverse removed");
+                            image.classList.remove(animation1ClassRev);
+                        }
+                    } else if(direction == "Backward") {
+                        // Adds reverse animation if not present
+                        if(!image.classList.contains(animation1ClassRev)) {
+                            console.log("Ani1 Reverse added");
+                            image.classList.add(animation1ClassRev);
+                            // pageAnimationCount = 0;
+                        }
+                        // Removes forward animation if present
+                        if(image.classList.contains(animation1ClassRev)) {
+                            console.log("Ani1 Forward removed");
+                            image.classList.remove(animation1ClassRev);
+                        }
+                    }
+                } else {
+                    animationSequenceState = 0;
+                    console.log(animationSequenceState);
+                }
+                break;
+            case 2://Second animation state
+                if(animating) {
+                    if(direction == "Forward") {
+                        // Adds forward animation if not present
+                        if(!image.classList.contains(animation2Class)) {
+                            console.log("Ani2 Forward added");
+                            image.classList.add(animation2Class);
+                        }
+                        // Removes reverse animation if present
+                        if(image.classList.contains(animation2ClassRev)) {
+                            console.log("Ani2 Reverse removed");
+                            image.classList.remove(animation2ClassRev);
+                        }
+                    } else if(direction == "Backward") {
+                        // Adds reverse animation if not present
+                        if(!image.classList.contains(animation2ClassRev)) {
+                            console.log("Ani2 Reverse added");
+                            image.classList.add(animation2ClassRev);
+                            pageAnimationCount = 1;
+                        }
+                        // Removes forward animation if present
+                        if(image.classList.contains(animation2ClassRev)) {
+                            console.log("Ani2 Forward removed");
+                            image.classList.remove(animation2ClassRev);
+                        }
+                    }
+                } else {
+                    animationSequenceState = 0;
+                    console.log(animationSequenceState);
+                }
+                break;
+        }
+    }
+</script>
 
-    // listen to events...
-    mc.on("panup pandown tap press", function(ev) {
-        myElement.textContent = ev.type +" gesture detected.";
-        if(ev.type == "panup") {
-            debug("swipe", "panup [scroll down]");
-        } else if(ev.type == "pandown") {
-            debug("swipe", "pandown  [scroll up]");
+<!-- Function for animation end event listener -->
+<script>
+    function animationOver() {
+        console.log("animation ended");
+        animating = false;
+        animationHandler("Null");
+    
+    }
+    document.getElementById("solar_system").addEventListener("webkitAnimationEnd", animationOver);
+    document.getElementById("solar_system").addEventListener("animationend", animationOver);
+</script>
+
+
+
+<!-- Detect swipe on touchscreen devices without cursor -->
+<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<script>
+    // Div that holds scrollable content, takes up full window
+    var container = document.getElementById("scrollContainer");
+    // Creates new instance of Hammer object to listen for swipe events
+    var swipeListener = new Hammer(container);
+    //Blocks vertical scrolling on touch-device while over the element
+    swipeListener.get('pan').set({direction: Hammer.DIRECTION_ALL});
+
+    swipeListener.on("panup pandown", function(event) {
+        //Grabs CSS variable value for cursor (either none or pointer)
+        var cursor = getComputedStyle(document.querySelector(":root")).getPropertyValue('--pointer');
+        if (cursor == 0) {//0 = No Mouse
+            if(event.type == "panup") {
+                // console.log("Panup");
+                animationHandler("Forward");
+            } else if(event.type == "pandown") {
+                // console.log("Pandown");
+                animationHandler("Backward");
+            }
         }
     });
 </script>
 
-<!-- Scroll detection -->
+<!-- Detect scroll on devices with cursor -->
 <script>
-    function scrollDetected(event) {
-        var scrollValue = event.deltaY;
-        debug("scroll", scrollValue);
+    function mouseScrolled(wheelValue) {
+        var cursor = getComputedStyle(document.querySelector(":root")).getPropertyValue('--pointer');
+        if (cursor == 1) {
+            if(wheelValue.deltaY < 0) {
+                // console.log("MWUP");
+                animationHandler("Backward");
+            } else if(wheelValue.deltaY > 0) {
+                // console.log("MWDN");
+                animationHandler("Forward");
+            }
+        }
     }
 </script>
-
-<!-- Debug called when swipe or scroll is detected -->
-<script>
-    function debug(type, direction) {
-        var value = getComputedStyle(document.querySelector(":root")).getPropertyValue('--pointer');
-        if(type == "swipe") {
-            console.log(value + ", " + direction);
-        }
-        if(type == "scroll") {
-            console.log(value + " pointer, value=" + direction);
-            document.getElementById("scrollValue").innerHTML = Math.round(direction);
-        }
-
-    }
-</script>
-
 
 </html>

@@ -1,23 +1,71 @@
 :root {
-    --pointer: "none";
-}
-
-body, html {
-    padding: 0;
-    margin: 0;
-}
-#myElement {
-    width: 100vw;
-    height: 80vh;
-    background-color: gray;
-    text-align: center;
-    font: 30px/300px Helvetica, Arial, sans-serif;
+    --pointer: 0;/* 0 = No Mouse */
 }
 @media (any-pointer: fine) {
     :root {
-        --pointer: "mouse";
+        --pointer: 1;/* 1 = Mouse */
     }
-    #myElement {
-        background-color: blue;
+}
+body, html {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+#scrollContainer {
+    width: 100vw;
+    height: 100vh;
+    background-color: #0A1A3C;
+}
+#solar_system {
+    position: absolute;
+    width: 100vw;
+    height: auto;
+    transform: scale(1);
+    top: 0%;
+    left: 0%;
+    /* transform: scale(4) translate(205px, -95px); */
+}
+@media (orientation: portrait) {
+    #solar_system {
+        width: auto;
+        height: 100vh;
     }
+}
+
+
+.state1Animation {
+    animation-name: ani1;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+
+}
+.state1AnimationRev {
+    animation-name: ani1Rev;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+    animation-direction: reverse;
+}
+@keyframes ani1 {
+    0%{transform: scale(1); top:0; left:0;}
+    100%{transform: scale(4); top: -80%; left: 115%;}
+}
+@keyframes ani1Rev {
+    0%{transform: scale(4); top: -80%; left: 115%;}
+    100%{transform: scale(1); top:0; left:0;}
+}
+
+.state2Animation {
+    animation-name: ani2;
+    animation-duration: 1.5s;
+    animation-fill-mode: both;
+}
+.state2AnimationRev {
+    animation-name: ani2;
+    animation-duration: 1.5s;
+    animation-fill-mode: both;
+    animation-direction: reverse;
+}
+@keyframes ani2 {
+    0%{transform: scale(4); top: -80%; left: 115%;}
+    100%{transform: scale(3); top: -7%; left: 60%;}
 }
